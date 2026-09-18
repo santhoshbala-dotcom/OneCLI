@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Security Control Center</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-icon">AI</div>
+      <div>
+        <strong>AgentGuard</strong>
+        <small>Security Control</small>
+      </div>
+    </div>
+
+    <nav>
+      <button class="nav-item active" onclick="showPage('overview', this)">◉ Overview</button>
+      <button class="nav-item" onclick="showPage('agents', this)">◆ Agents</button>
+      <button class="nav-item" onclick="showPage('permissions', this)">♢ Permissions</button>
+      <button class="nav-item" onclick="showPage('apis', this)">◇ APIs & Tools</button>
+      <button class="nav-item" onclick="showPage('activity', this)">▤ Activity Logs</button>
+      <button class="nav-item" onclick="showPage('alerts', this)">⚠ Security Alerts</button>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <button onclick="toggleKillSwitch()" class="kill-button">
+        ⛔ Emergency Stop
+      </button>
+
+      <div class="admin">
+        <div class="avatar">A</div>
+        <div>
+          <strong>Administrator</strong>
+          <small>Super Admin</small>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+
+  <main class="main">
+
+    <header>
+      <div>
+        <h1 id="page-title">AI Security Control Center</h1>
+        <p>Manage AI agents, permissions and business-tool access.</p>
+      </div>
+
+      <div class="header-right">
+        <span class="system-status">
+          <span class="status-dot"></span>
+          System Operational
+        </span>
+        <button class="profile">A</button>
+      </div>
+    </header>
+
+
+    <!-- OVERVIEW -->
+    <section id="overview" class="page active-page">
+
+      <div class="stats">
+
+        <div class="stat-card">
+          <div class="stat-icon">◆</div>
+          <div>
+            <span>Active Agents</span>
+            <h2 id="activeAgents">3</h2>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon">◇</div>
+          <div>
+            <span>Connected Tools</span>
+            <h2>6</h2>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon warning">⚠</div>
+          <div>
+            <span>Security Alerts</span>
+            <h2 id="alertCount">4</h2>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon danger">!</div>
+          <div>
+            <span>Blocked Actions</span>
+            <h2 id="blockedCount">17</h2>
+          </div>
+        </div>
+
+      </div>
+
+
+      <div class="grid">
+
+        <div class="card large">
+          <div class="card-header">
+            <div>
+              <h3>Agent Activity</h3>
+              <p>Recent AI-agent actions</p>
+            </div>
+            <button onclick="showPage('activity')">View all</button>
+          </div>
+
+          <div id="recentActivity"></div>
+        </div>
+
+
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h3>Security Alerts</h3>
+              <p>Requires attention</p>
+            </div>
+          </div>
+
+          <div id="recentAlerts"></div>
+        </div>
+
+      </div>
+
+
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h3>Agent Status</h3>
+            <p>Current access state</p>
+          </div>
+        </div>
+
+        <div id="agentStatus"></div>
+      </div>
+
+    </section>
+
+
+    <!-- AGENTS -->
+    <section id="agents" class="page">
+
+      <div class="page-actions">
+        <div>
+          <h2>AI Agents</h2>
+          <p>Configure and control your AI agents.</p>
+        </div>
+        <button class="primary" onclick="addAgent()">+ Add Agent</button>
+      </div>
+
+      <div class="agent-grid" id="agentCards"></div>
+
+    </section>
+
+
+    <!-- PERMISSIONS -->
+    <section id="permissions" class="page">
+
+      <div class="page-actions">
+        <div>
+          <h2>Permissions</h2>
+          <p>Control exactly what each agent can do.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <table>
+          <thead>
+            <tr>
+              <th>Agent</th>
+              <th>Tool</th>
+              <th>Read</th>
+              <th>Create</th>
+              <th>Update</th>
+              <th>Delete</th>
+              <th>Approval</th>
+            </tr>
+          </thead>
+
+          <tbody id="permissionTable"></tbody>
+        </table>
+      </div>
+
+    </section>
+
+
+    <!-- APIS -->
+    <section id="apis" class="page">
+
+      <div class="page-actions">
+        <div>
+          <h2>APIs & Tools</h2>
+          <p>Manage business-system connections.</p>
+        </div>
+
+        <button class="primary" onclick="connectAPI()">+ Connect Tool</button>
+      </div>
+
+      <div class="tool-grid" id="toolGrid"></div>
+
+    </section>
+
+
+    <!-- ACTIVITY -->
+    <section id="activity" class="page">
+
+      <div class="page-actions">
+        <div>
+          <h2>Activity Logs</h2>
+          <p>Audit every AI-agent action.</p>
+        </div>
+
+        <button onclick="clearLogs()">Clear Demo Logs</button>
+      </div>
+
+      <div class="card">
+
+        <div class="filters">
+          <input
+            type="text"
+            id="activitySearch"
+            placeholder="Search agent, tool or action..."
+            oninput="renderActivity()"
+          >
+
+          <select id="statusFilter" onchange="renderActivity()">
+            <option value="ALL">All Status</option>
+            <option value="ALLOWED">Allowed</option>
+            <option value="BLOCKED">Blocked</option>
+          </select>
+        </div>
+
+        <div id="activityTable"></div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ALERTS -->
+    <section id="alerts" class="page">
+
+      <div class="page-actions">
+        <div>
+          <h2>Security Alerts</h2>
+          <p>Monitor potentially dangerous activity.</p>
+        </div>
+
+        <button onclick="generateAlert()">+ Generate Test Alert</button>
+      </div>
+
+      <div id="alertList"></div>
+
+    </section>
+
+  </main>
+
+
+  <div id="toast"></div>
+
+  <script src="script.js"></script>
+
+</body>
+</html>
